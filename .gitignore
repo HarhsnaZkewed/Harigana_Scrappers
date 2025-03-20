@@ -1,0 +1,17 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Media and static files
+/media/
+
+# VS Code settings
+.vscode/
+
+# Virtual environment
+venv/
+env/
+Data/
+staticfiles/
+
