@@ -1,6 +1,7 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import pymongo
+from datetime import datetime
 
 class LankaPropertySpider(scrapy.Spider):
     name = 'lankaproperty'
@@ -31,7 +32,7 @@ class LankaPropertySpider(scrapy.Spider):
             yield response.follow(response.urljoin(listing), callback=self.parse_property_details)
 
         # Pagination logic (up to page 5)
-        if listings and self.page_number < 5:
+        if listings and self.page_number < 2:
             self.page_number += 1
             yield scrapy.Request(self.base_url.format(self.page_number), callback=self.parse)
 
@@ -49,6 +50,7 @@ class LankaPropertySpider(scrapy.Spider):
             'property_details': response.xpath("//div[@id='Property_Details']//p/text()").getall(),
             'features': response.xpath("//div[@id='Property_Features']//div[@class='item']/text()").getall(),
             'property_type': response.xpath("//div[contains(text(),'Property Type')]/following-sibling::div/text()").get(),
+            'inserted_datetime':datetime.now(),
         }
         
          # Insert data into MongoDB

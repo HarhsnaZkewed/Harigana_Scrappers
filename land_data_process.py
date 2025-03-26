@@ -1,6 +1,7 @@
 import pymongo
 import pandas as pd
 import re
+from datetime import datetime, timedelta
 
 # Connection to MongoDB Atlas
 client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
@@ -8,11 +9,35 @@ client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@c
 #Connection to the un-processed DB
 db = client['property']
 
-#Un-processed data collections
+
+# Collections
 ikman_db = db['ikman_land_tb']
 patpat_db = db['patpat_tb']
 lanakaproperty_db = db['lanakaproperty_tb']
+combined_db = db['combined_tb']
 
+# Define the threshold time
+threshold_time1 = datetime.now() - timedelta(minutes=60)
+threshold_time2 = datetime.now() - timedelta(days=90)
+
+# Function to check count before and after deletion
+def delete_old_records(collection, threshold):
+    count_before = collection.count_documents({"inserted_datetime": {"$lt": threshold}})
+    print(f"Records before deletion in {collection.name}: {count_before}")
+    
+    result = collection.delete_many({"inserted_datetime": {"$lt": threshold}})
+    
+    count_after = collection.count_documents({"inserted_datetime": {"$lt": threshold}})
+    print(f"Records deleted: {result.deleted_count}")
+    print(f"Records after deletion in {collection.name}: {count_after}")
+
+# Delete old records
+delete_old_records(ikman_db, threshold_time1)
+delete_old_records(patpat_db, threshold_time1)
+delete_old_records(lanakaproperty_db, threshold_time1)
+delete_old_records(combined_db, threshold_time2)
+
+print("Old records deleted successfully.")
 
 # Convert MongoDB data to DataFrameres
 ikman_pd = pd.DataFrame(list(ikman_db.find()))
@@ -104,6 +129,7 @@ def ikman_data_extraction():
     property_details = ikman_pd['property_details']
     property_features = ikman_pd['features']
     property_type = ikman_pd['property_type']
+    inserted_datetime = ikman_pd['inserted_datetime']
     website = 'Ikaman'
 
     location = location + ',' + property_type
@@ -131,6 +157,7 @@ def ikman_data_extraction():
         'property_details': property_details,
         'property_features': property_features,
         'property_type': property_type,
+        'inserted_datetime':inserted_datetime,
         'website': website
     })
 
@@ -148,6 +175,7 @@ def patpat_data_extraction():
     property_details = patpat_pd['property_details']
     property_features = patpat_pd['features']
     property_type = patpat_pd['property_type']
+    inserted_datetime = patpat_pd['inserted_datetime']
     website = 'Pat Pat'
 
     property_features = property_features.apply(lambda features:
@@ -170,6 +198,7 @@ def patpat_data_extraction():
         'property_details': property_details,
         'property_features': property_features,
         'property_type': property_type,
+        'inserted_datetime':inserted_datetime,
         'website': website
     })
 
@@ -187,6 +216,7 @@ def lanakaproperty_data_extraction():
     property_details = lanakaproperty_pd['property_details']
     property_features = lanakaproperty_pd['features']
     property_type = lanakaproperty_pd['property_type']
+    inserted_datetime = lanakaproperty_pd['inserted_datetime']
     website = 'Lanka Property'
 
     property_features = property_features.apply(lambda features:
@@ -210,6 +240,7 @@ def lanakaproperty_data_extraction():
         'property_details': property_details,
         'property_features': property_features,
         'property_type': property_type,
+        'inserted_datetime':inserted_datetime,
         'website': website
     })
 
@@ -231,12 +262,12 @@ combined_df['unit_price'] = combined_df.apply(
     lambda row: extract_unit_prices(row['price'], row['perches']) if row['property_type'] == 'Land' else row['price'],
     axis=1
 )
+combined_df["inserted_datetime"] = pd.to_datetime(combined_df["inserted_datetime"], errors='coerce')  # Coerce invalid values
 
 # Convert DataFrame to list of dictionaries
 combined_records = combined_df.to_dict(orient='records')
 
 # Insert data into the 'combined_tb' collection
-combined_db = db['processed_tb']
 combined_db.insert_many(combined_records)
 
 print("Data has been inserted into the 'processed_tb' collection on MongoDB Atlas.")

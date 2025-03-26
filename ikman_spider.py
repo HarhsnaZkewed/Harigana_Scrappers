@@ -1,6 +1,7 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import pymongo
+from datetime import datetime
 
 class IkmanSpider(scrapy.Spider):
     name = 'ikman'
@@ -31,7 +32,7 @@ class IkmanSpider(scrapy.Spider):
             yield response.follow(response.urljoin(listing), callback=self.parse_property_details)
 
         # Pagination logic (up to page 5)
-        if listings and self.page_number < 5:
+        if listings and self.page_number < 2:
             self.page_number += 1
             yield scrapy.Request(self.base_url.format(self.page_number), callback=self.parse)
 
@@ -48,7 +49,8 @@ class IkmanSpider(scrapy.Spider):
             'price': response.xpath("normalize-space(//div[@class='amount--3NTpl']/text())").get(),
             'property_details': response.xpath("//div[@class='description--1nRbz']//p/text()")[0].get().strip(),
             'features': response.xpath("//div[@class='description--1nRbz']//p/text()").getall(),
-            'property_type': response.xpath("normalize-space(//h1[@class='title--3s1R8']/text())").get()
+            'property_type': response.xpath("normalize-space(//h1[@class='title--3s1R8']/text())").get(),
+            'inserted_datetime':datetime.now(),
         }
         
         # Insert data into MongoDB

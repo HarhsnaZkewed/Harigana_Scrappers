@@ -1,6 +1,8 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import pymongo
+from datetime import datetime
+
 
 class PatPatSpider(scrapy.Spider):
     name = 'patpat'
@@ -32,7 +34,7 @@ class PatPatSpider(scrapy.Spider):
             yield response.follow(response.urljoin(listing), callback=self.parse_property_details)
 
         # Pagination logic (up to page 5)
-        if listings and self.page_number < 5:
+        if listings and self.page_number < 2:
             self.page_number += 1
             yield scrapy.Request(self.base_url.format(self.page_number), callback=self.parse)
 
@@ -50,6 +52,7 @@ class PatPatSpider(scrapy.Spider):
             'property_details': response.xpath('//th[normalize-space(text())="Types"]/following-sibling::td/text()').get(),
             'features':response.xpath('//div[@class="item-description card mt-3 mb-3 p-3"]//p/text()').getall(),
             'property_type': response.xpath('//th[normalize-space(text())="Category"]/following-sibling::td/text()').get(),
+            'inserted_datetime':datetime.now(),
             
            }
         
