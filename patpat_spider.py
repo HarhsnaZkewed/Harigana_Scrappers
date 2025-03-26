@@ -6,7 +6,7 @@ from datetime import datetime
 
 class PatPatSpider(scrapy.Spider):
     name = 'patpat'
-    page_number = 1
+    page_number = 5
     base_url = 'https://www.patpat.lk/property?page={}&city=&sub_category=&sub_category_name=&category=property&search_txt=&sort_by='
     start_urls = [base_url.format(page_number)]
     
@@ -21,8 +21,8 @@ class PatPatSpider(scrapy.Spider):
     
     def __init__(self):
         """Initialize MongoDB connection."""
-        self.client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-        self.db = self.client['property']  # Database name
+        self.client = pymongo.MongoClient("mongodb+srv://zkewed:zkewed123A@vehicalevaluation.d9ufa.mongodb.net/?retryWrites=true&w=majority", 27017)
+        self.db = self.client['data_store_dev']  # Database name
         self.collection = self.db['patpat_tb']  # Collection name
 
 

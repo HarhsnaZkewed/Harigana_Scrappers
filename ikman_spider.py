@@ -5,7 +5,7 @@ from datetime import datetime
 
 class IkmanSpider(scrapy.Spider):
     name = 'ikman'
-    page_number = 1
+    page_number = 5
     base_url = 'https://ikman.lk/en/ads/sri-lanka/property?sort=date&order=desc&buy_now=0&urgent=0&page={}'
     start_urls = [base_url.format(page_number)]
     
@@ -20,8 +20,8 @@ class IkmanSpider(scrapy.Spider):
 
     def __init__(self):
         """Initialize MongoDB connection."""
-        self.client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-        self.db = self.client['property']  # Database name
+        self.client = pymongo.MongoClient("mongodb+srv://zkewed:zkewed123A@vehicalevaluation.d9ufa.mongodb.net/?retryWrites=true&w=majority", 27017)
+        self.db = self.client['data_store_dev']  # Database name
         self.collection = self.db['ikman_land_tb']  # Collection name
     
     def parse(self, response):

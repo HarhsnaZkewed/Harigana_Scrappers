@@ -4,10 +4,12 @@ import re
 from datetime import datetime, timedelta
 
 # Connection to MongoDB Atlas
-client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+#client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = pymongo.MongoClient("mongodb+srv://zkewed:zkewed123A@vehicalevaluation.d9ufa.mongodb.net/?retryWrites=true&w=majority", 27017)
 
 #Connection to the un-processed DB
-db = client['property']
+#db = client['property']
+db = client['data_store_dev']
 
 
 # Collections
