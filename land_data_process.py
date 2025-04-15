@@ -4,13 +4,12 @@ import re
 from datetime import datetime, timedelta
 
 # Connection to MongoDB Atlas
-#client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 client = pymongo.MongoClient("mongodb+srv://zkewed:zkewed123A@vehicalevaluation.d9ufa.mongodb.net/?retryWrites=true&w=majority", 27017)
+#client = pymongo.MongoClient('mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+
 
 #Connection to the un-processed DB
-#db = client['property']
 db = client['data_store_dev']
-
 
 # Collections
 ikman_db = db['ikman_land_tb']
@@ -19,7 +18,7 @@ lanakaproperty_db = db['lanakaproperty_tb']
 combined_db = db['combined_tb']
 
 # Define the threshold time
-threshold_time1 = datetime.now() - timedelta(minutes=60)
+threshold_time1 = datetime.now() - timedelta(minutes=600)
 threshold_time2 = datetime.now() - timedelta(days=90)
 
 # Function to check count before and after deletion

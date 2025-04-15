@@ -4,10 +4,9 @@ import pymongo
 from datetime import datetime
 
 class LankaPropertySpider(scrapy.Spider):
-    name = 'lankaproperty'
-    page_number = 5
+    name = 'lankaproperty'    
     base_url = 'https://www.lankapropertyweb.com/sale/index.php?page={}&no-rooms=&search=1&radius='
-    start_urls = [base_url.format(page_number)]
+   
     
     # Custom Scrapy settings for handling delays and retries
     custom_settings = {
@@ -21,20 +20,22 @@ class LankaPropertySpider(scrapy.Spider):
     def __init__(self):
         """Initialize MongoDB connection."""
         self.client = pymongo.MongoClient("mongodb+srv://zkewed:zkewed123A@vehicalevaluation.d9ufa.mongodb.net/?retryWrites=true&w=majority", 27017)
+        #self.client = pymongo.MongoClient("mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+        
         self.db = self.client['data_store_dev']  # Database name
         self.collection = self.db['lanakaproperty_tb']  # Collection name
+
+    def start_requests(self):
+        for page in range(1, 10):  
+            url = self.base_url.format(page)
+            yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response):
         """Extracts listing links and follows them to property details page."""
         listings = response.xpath("//h4[@class='listing-title']/a/@href").getall()
 
         for listing in listings:
-            yield response.follow(response.urljoin(listing), callback=self.parse_property_details)
-
-        # Pagination logic (up to page 5)
-        if listings and self.page_number < 2:
-            self.page_number += 1
-            yield scrapy.Request(self.base_url.format(self.page_number), callback=self.parse)
+           yield response.follow(response.urljoin(listing), callback=self.parse_property_details)       
 
     def parse_property_details(self, response):
         """Extracts property details from individual listing pages."""
