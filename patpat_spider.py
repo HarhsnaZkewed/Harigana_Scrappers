@@ -3,7 +3,6 @@ from scrapy.crawler import CrawlerProcess
 import pymongo
 from datetime import datetime
 
-
 class PatPatSpider(scrapy.Spider):
     name = 'patpat'    
     base_url = 'https://www.patpat.lk/property?page={}&city=&sub_category=&sub_category_name=&category=property&search_txt=&sort_by='

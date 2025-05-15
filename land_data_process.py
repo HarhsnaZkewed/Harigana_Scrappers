@@ -18,7 +18,7 @@ lanakaproperty_db = db['lanakaproperty_tb']
 combined_db = db['combined_tb']
 
 # Define the threshold time
-threshold_time1 = datetime.now() - timedelta(minutes=600)
+threshold_time1 = datetime.now() - timedelta(minutes=60)
 threshold_time2 = datetime.now() - timedelta(days=90)
 
 # Function to check count before and after deletion
